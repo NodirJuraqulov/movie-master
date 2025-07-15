@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Facebook from "@/assets/faceboook.svg";
 import Google from "@/assets/google.svg";
 import { Form, Input } from "antd";
@@ -12,12 +12,14 @@ import { auth, provider } from "../../firebase/firebase";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  
-  console.log("render");
-  
+
+  useEffect(() => {
+    console.log("📦 VERCELDA SIGNIN render");
+  }, []);
+
   const handleGoogleLogin = async () => {
     console.log("Google bosildi!");
-    
+
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
