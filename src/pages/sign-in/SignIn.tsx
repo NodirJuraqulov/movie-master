@@ -13,6 +13,8 @@ import { auth, provider } from "../../firebase/firebase";
 const SignIn = () => {
   const navigate = useNavigate();
   
+  console.log("render");
+  
   const handleGoogleLogin = async () => {
     console.log("Google bosildi!");
     
