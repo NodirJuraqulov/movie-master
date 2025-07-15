@@ -14,6 +14,8 @@ const SignIn = () => {
   const navigate = useNavigate();
   
   const handleGoogleLogin = async () => {
+    console.log("Google bosildi!");
+    
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
