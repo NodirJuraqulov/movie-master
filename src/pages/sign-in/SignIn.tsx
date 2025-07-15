@@ -5,9 +5,25 @@ import { Form, Input } from "antd";
 import { PatternFormat } from "react-number-format";
 import { LeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+// import PhoneSignIn from "@/components/PhoneSignIn";
+
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../../firebase/firebase";
 
 const SignIn = () => {
   const navigate = useNavigate();
+  
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("Google foydalanuvchi:", user);
+      navigate("/"); // yoki istalgan sahifaga
+    } catch (error) {
+      console.error("Google bilan login xatosi:", error);
+    }
+  };
+
 
   return (
     <div className="w-full container mx-auto mt-12 relative flex items-center justify-center">
@@ -72,7 +88,7 @@ const SignIn = () => {
           <Form.Item label={null} className="w-full flex justify-center">
             <button
               className="cursor-pointer text-[16px] dark:text-white  leading-5 font-medium px-[140px] py-4 bg-[#C61F1F] rounded-[12px] w-[380px]"
-              //   htmlType="submit"
+            //   htmlType="submit"
             >
               Registration
             </button>
@@ -100,12 +116,13 @@ const SignIn = () => {
             <img src={Facebook} alt="Facebook" />
             <h4 className="text-[16px] leading-5 font-medium">Facebook</h4>
           </button>
-          <button className="cursor-pointer px-10 py-5 dark:bg-[#111] bg-slate-200 rounded-[12px] w-[186px] flex items-center justify-center gap-2">
+          <button onClick={handleGoogleLogin} className="cursor-pointer px-10 py-5 dark:bg-[#111] bg-slate-200 rounded-[12px] w-[186px] flex items-center justify-center gap-2">
             <img src={Google} alt="Google" />
             <h4 className="text-[16px] leading-5 font-medium">Google</h4>
           </button>
         </div>
       </div>
+      {/* <PhoneSignIn /> */}
     </div>
   );
 };

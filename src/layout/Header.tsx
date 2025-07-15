@@ -13,6 +13,9 @@ import {
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux";
+import { useAuth } from "@/context/AuthContext";
+import { auth } from "@/firebase/firebase";
+import { UserOutlined } from "@ant-design/icons";
 
 const linkBase =
   "flex flex-col items-center justify-center gap-1 transition-colors";
@@ -40,7 +43,9 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const { user } = useAuth();
 
   const saved = useSelector((state: RootState) => state.saved.value);
 
@@ -89,9 +94,46 @@ const Header = () => {
         </button>
 
         <div className="flex items-center gap-5">
-          <button onClick={() => navigate("/signin")} className="text-[16px] font-medium cursor-pointer line-clamp-1 text-white bg-[#C61F1F] lg:px-4 md:px-3 sm:px-2 px-1 py-1 rounded-[6px]">
-            Sign in
-          </button>
+          {user ? (
+            <div className="flex items-center gap-3">
+              {/* Profil rasmi */}
+                {
+                  user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt="User avatar"
+                      className="w-8 h-8 rounded-full border border-gray-300"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center bg-gray-200 dark:bg-gray-800">
+                      <UserOutlined style={{ fontSize: 18, color: "#555" }} />
+                    </div>
+                  )
+                }
+
+              {/* Ismi yoki emaili */}
+              <span className="text-sm font-medium text-black dark:text-white">
+                {user.displayName || user.email}
+              </span>
+
+              {/* Logout tugmasi */}
+              <button
+                onClick={() => auth.signOut()}
+                className="text-xs text-red-600 hover:underline"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate("/signin")}
+              className="text-[16px] font-medium cursor-pointer line-clamp-1 text-white bg-[#C61F1F] lg:px-4 md:px-3 sm:px-2 px-1 py-1 rounded-[6px]"
+            >
+              Sign in
+            </button>
+          )}
+
+
           <DarkMode />
           <LanguageSelect value={lang} onChange={setLang} />
         </div>

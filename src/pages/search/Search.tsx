@@ -1,23 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Input, Spin, Pagination } from "antd";
 import SearchIcon from "@/assets/search-line.svg";
 import { useMovie } from "@/api/hooks/useMovie";
 import MovieView from "@/components/movie-view/MovieView";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useParamsHook } from "@/hooks/useParamsHook";
 
 const SearchMovie = () => {
-  const [query, setQuery] = useState("")
+  const { getParam, setParam } = useParamsHook();
+
+  const [query, setQuery] = useState(getParam("query") || "")
   const [debouncedQuery, setDebouncedQuery] = useState(query)
   const [page, setPage] = useState(1)
+
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    const urlQuery = getParam("query") || "";
+    const urlPage = Number(getParam("page")) || 1;
+
+    setQuery(urlQuery);
+    setDebouncedQuery(urlQuery);
+    setPage(urlPage);
+  }, []);
+
+  const handleChangeQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+    setParam("page", newPage.toString());
+  };
 
   const { getSearch } = useMovie()
   const { data, isLoading } = getSearch(debouncedQuery, page)
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return; // ❗ birinchi renderda page = 1 qilmaymiz
+    }
+
     const timeout = setTimeout(() => {
       setDebouncedQuery(query);
-      setPage(1);
+      setParam("query", query);
+      setParam("page", "1");
+      setPage(1); // faqat user yozganda ishlasin
     }, 500);
+
     return () => clearTimeout(timeout);
   }, [query]);
 
@@ -29,7 +60,7 @@ const SearchMovie = () => {
           placeholder="Search movies..."
           allowClear
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={handleChangeQuery}
           prefix={
             <img
               src={SearchIcon}
@@ -54,7 +85,7 @@ const SearchMovie = () => {
           {data?.total_pages > 1 && (
             <Pagination
               current={page}
-              onChange={(p) => setPage(p)}
+              onChange={handleChangePage}
               pageSize={20}
               total={data.total_results}
               showSizeChanger={false}
