@@ -10,6 +10,7 @@ import SavedFill from "@/assets/bookmark-fill.svg";
 import { toggleSaved } from "@/redux/features/saved";
 import type { RootState } from "@/redux";
 // import Skeleton from "./Skeleton";
+import { useAuth } from "@/context/AuthContext";
 
 interface Props {
   data: undefined | IMovie[];
@@ -19,28 +20,40 @@ interface Props {
 const MovieView: FC<Props> = ({ data, isLoading }) => {
   const navigate = useNavigate();
 
+  const { user } = useAuth();
+
+  const handleToggleSaved = (movie: IMovie) => {
+    if (!user) {
+      navigate("/signin"); // agar login bo‘lmagan bo‘lsa — signin sahifasiga
+      return;
+    }
+
+    dispatch(toggleSaved(movie)); // login bo‘lsa — saqlashni bajar
+  };
+
+
   const saved = useSelector((state: RootState) => state.saved.value)
-  
+
   const dispatch = useDispatch()
 
   return (
     <div className="container mx-auto grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-5">
       {isLoading
         ? Array(20)
-            .fill(null)
-            .map((_, index) => (
-              <div
-                key={index}
-                className="bg-slate-200 dark:bg-[#111] animate-pulse rounded-lg w-full"
-              >
-                <div className="bg-gray-300 dark:bg-gray-600 h-[424px] rounded-[12px]"></div>
-                <div className="p-2">
-                  <div className="bg-gray-100 dark:bg-gray-500 mt-2 h-6 rounded-[12px] w-10/12"></div>
-                  <div className="bg-gray-100 dark:bg-gray-500 mt-2 h-6 rounded-[12px] w-6/12"></div>
-                </div>
+          .fill(null)
+          .map((_, index) => (
+            <div
+              key={index}
+              className="bg-slate-200 dark:bg-[#111] animate-pulse rounded-lg w-full"
+            >
+              <div className="bg-gray-300 dark:bg-gray-600 h-[424px] rounded-[12px]"></div>
+              <div className="p-2">
+                <div className="bg-gray-100 dark:bg-gray-500 mt-2 h-6 rounded-[12px] w-10/12"></div>
+                <div className="bg-gray-100 dark:bg-gray-500 mt-2 h-6 rounded-[12px] w-6/12"></div>
               </div>
-            ))
-        : data?.map((movie: IMovie) => { 
+            </div>
+          ))
+        : data?.map((movie: IMovie) => {
           const isSaved = saved.some((i: IMovie) => i.id === movie.id)
           return (
             <div
@@ -63,7 +76,7 @@ const MovieView: FC<Props> = ({ data, isLoading }) => {
                 </p>
 
                 <img
-                  onClick={() => dispatch(toggleSaved(movie))}
+                  onClick={() => handleToggleSaved(movie)}
                   src={isSaved ? SavedFill : SavedLine}
                   alt="Saved"
                   className="absolute top-2 right-2 p-[6px] cursor-pointer bg-[#111111] rounded"
@@ -85,7 +98,8 @@ const MovieView: FC<Props> = ({ data, isLoading }) => {
                 </div>
               </div>
             </div>
-          )})}
+          )
+        })}
     </div>
   );
 };

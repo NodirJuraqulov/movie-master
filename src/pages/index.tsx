@@ -1,3 +1,4 @@
+import ProtectedRoute from "@/components/routes/ProtectedRoute";
 import { lazy } from "react";
 import { useRoutes } from "react-router-dom";
 
@@ -39,7 +40,11 @@ const MainRouter = () => {
         },
         {
           path: "/search",
-          element: <Search />,
+          element: (
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "/signin",
