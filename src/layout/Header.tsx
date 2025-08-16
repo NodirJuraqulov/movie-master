@@ -83,20 +83,11 @@ const Header = () => {
               <span className="text-[14px] font-medium">{label}</span>
             </NavLink>
           ))}
-        </div>
 
-        <button
-          onClick={() => setMenuOpen(true)}
-          className="md:hidden p-2 rounded hover:bg-slate-200 dark:hover:bg-gray-900"
-          aria-label="Open menu"
-        >
-          <MenuOutlined style={{ fontSize: "22px" }} />
-        </button>
-
-        <div className="flex items-center gap-5">
-          {user ? (
-            <div className="flex items-center gap-3">
-              {/* Profil rasmi */}
+          <div className="flex items-center gap-5">
+            {user ? (
+              <div className="flex items-center gap-3">
+                {/* Profil rasmi */}
                 {
                   user.photoURL ? (
                     <img
@@ -111,68 +102,129 @@ const Header = () => {
                   )
                 }
 
-              {/* Ismi yoki emaili */}
-              <span className="text-sm font-medium text-black dark:text-white">
-                {user.displayName || user.email}
-              </span>
+                {/* Ismi yoki emaili */}
+                <span className="text-sm font-medium text-black dark:text-white">
+                  {user.displayName || user.email}
+                </span>
 
-              {/* Logout tugmasi */}
+                {/* Logout tugmasi */}
+                <button
+                  onClick={() => auth.signOut()}
+                  className="text-xs text-red-600 hover:underline"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
               <button
-                onClick={() => auth.signOut()}
-                className="text-xs text-red-600 hover:underline"
+                onClick={() => navigate("/signin")}
+                className="text-[16px] font-medium cursor-pointer line-clamp-1 text-white bg-[#C61F1F] lg:px-4 md:px-3 sm:px-2 px-1 py-1 rounded-[6px]"
               >
-                Logout
+                Sign in
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => navigate("/signin")}
-              className="text-[16px] font-medium cursor-pointer line-clamp-1 text-white bg-[#C61F1F] lg:px-4 md:px-3 sm:px-2 px-1 py-1 rounded-[6px]"
-            >
-              Sign in
-            </button>
-          )}
+            )}
 
 
-          <DarkMode />
-          <LanguageSelect value={lang} onChange={setLang} />
+            <DarkMode />
+            <LanguageSelect value={lang} onChange={setLang} />
+          </div>
         </div>
+
+        <button
+          onClick={() => setMenuOpen(true)}
+          className="md:hidden p-2 rounded hover:bg-slate-200 dark:hover:bg-gray-900"
+          aria-label="Open menu"
+        >
+          <MenuOutlined style={{ fontSize: "22px" }} />
+        </button>
       </div>
 
       <div>
         {menuOpen && (
           <div
-            className="fixed inset-0 bg-black/20 z-50"
+            className="fixed inset-0 bg-black/30 z-50"
             onClick={() => setMenuOpen(false)}
           >
             <div
-              className="absolute left-1/2 -translate-x-1/2 top-[70px] w-56 bg-slate-200 dark:bg-[#111111] rounded-lg shadow-lg p-6"
+              className="absolute left-1/2 -translate-x-1/2 top-[70px] w-64 bg-slate-100 dark:bg-[#111111] rounded-2xl shadow-xl p-6 flex flex-col items-center"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Close Button */}
               <button
                 onClick={() => setMenuOpen(false)}
-                className="absolute top-3 right-3 p-1"
+                className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-300 dark:hover:bg-gray-800 transition"
                 aria-label="Close menu"
               >
-                <CloseOutlined size={24} />
+                <CloseOutlined size={22} className="text-black dark:text-white" />
               </button>
 
-              <nav className="flex flex-col gap-4 mt-6 text-center">
+              {/* User Info Section */}
+              <div className="flex flex-col items-center gap-3 mt-2 mb-6">
+                {user ? (
+                  <>
+                    {/* Profil rasmi */}
+                    {user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt="User avatar"
+                        className="w-14 h-14 rounded-full border border-gray-300 shadow-sm"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-full border border-gray-300 flex items-center justify-center bg-gray-200 dark:bg-gray-800">
+                        <UserOutlined style={{ fontSize: 28, color: "#555" }} />
+                      </div>
+                    )}
+
+                    {/* Ismi yoki emaili */}
+                    <span className="text-base font-semibold text-black dark:text-white">
+                      {user.displayName || user.email}
+                    </span>
+
+                    {/* Logout tugmasi */}
+                    <button
+                      onClick={() => auth.signOut()}
+                      className="text-sm text-red-600 hover:underline"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate("/signin");
+                    }}
+                    className="text-sm font-medium text-white bg-[#C61F1F] px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                  >
+                    Sign in
+                  </button>
+                )}
+              </div>
+
+              {/* Navigation Links */}
+              <nav className="flex flex-col gap-3 w-full text-center">
                 {["Home", "Movies", "Saved", "Search"].map((t) => (
                   <NavLink
                     key={t}
                     to={t === "Home" ? "/" : `/${t.toLowerCase()}`}
                     onClick={() => setMenuOpen(false)}
-                    className="text-lg font-medium rounded-md py-1 text-black dark:text-white hover:text-[#C61F1F] hover:bg-slate-300 dark:hover:bg-gray-900 transition"
+                    className="text-lg font-medium rounded-md py-2 text-black dark:text-white hover:text-[#C61F1F] hover:bg-slate-200 dark:hover:bg-gray-900 transition"
                   >
                     {t}
                   </NavLink>
                 ))}
               </nav>
+
+              {/* Settings Section */}
+              <div className="flex items-center justify-between gap-6 mt-8 w-full px-4">
+                <DarkMode />
+                <LanguageSelect value={lang} onChange={setLang} />
+              </div>
             </div>
           </div>
         )}
       </div>
+
     </header>
   );
 };
